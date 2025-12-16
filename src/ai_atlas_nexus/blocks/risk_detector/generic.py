@@ -86,11 +86,10 @@ class GenericRiskDetector(RiskDetector):
                             "answer": {
                                 "type": "string",
                                 "enum": ["Yes", "No"],
-                            }
+                            },
+                            "explanation": {"type": "string"},
                         },
-                        "required": [
-                            "answer",
-                        ],
+                        "required": ["answer", "explanation"],
                     },
                     postprocessors=["json_object"],
                 )
@@ -99,7 +98,12 @@ class GenericRiskDetector(RiskDetector):
             risks = []
             for index, response in enumerate(inference_responses):
                 if response.prediction["answer"] == "Yes":
-                    risks.append(self._risks[index])
+                    risks.append(
+                        {
+                            "risk": self._risks[index].name,
+                            "explanation": response.prediction["explanation"],
+                        }
+                    )
             all_risks.append(risks)
 
         return all_risks

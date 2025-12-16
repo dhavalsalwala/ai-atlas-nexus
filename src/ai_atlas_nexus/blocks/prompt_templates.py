@@ -40,6 +40,7 @@ Instructions:
 1. Use AI Risk `Description` to determine if the given AI Risk is associated with the Usecase.
 2. If the given AI Risk exist in the usecase, classify it as Yes.
 3. If the Usecase doesn't fit into the AI Risk description, classify it as No.
+4. You should give the output as Yes or No followed by the explanation on how that classification was inferred.
 
 Usecase: {{ usecase }}
 Risk: """
