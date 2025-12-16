@@ -167,7 +167,6 @@ class AIAtlasNexus:
         classes: List[str] = cls._atlas_explorer.get_all_classes()
         return classes
 
-
     def get_all(cls, class_name, taxonomy=None, vocabulary=None):
         """
         Get all the instances of a specified class.
@@ -189,7 +188,9 @@ class AIAtlasNexus:
             class_name,
             "Please provide a class_name",
         )
-        instances: list[Any] = cls._atlas_explorer.get_all(class_name, taxonomy, vocabulary)
+        instances: list[Any] = cls._atlas_explorer.get_all(
+            class_name, taxonomy, vocabulary
+        )
         return instances
 
     def get_by_id(cls, class_name, identifier):
@@ -303,7 +304,8 @@ class AIAtlasNexus:
             "Please provide tag, id, or name",
         )
 
-        risk: Risk | None = cls._atlas_explorer.query("risks",
+        risk: Risk | None = cls._atlas_explorer.query(
+            "risks",
             tag=tag,
             id=id,
             name=name,
@@ -365,11 +367,13 @@ class AIAtlasNexus:
             risk = cls.get_risk(tag=tag)
 
         # just get all the related risks from the risk, these should have been added during lifting
-        options = [risk.closeMatch or [],
-        risk.exactMatch or [] ,
-        risk.broadMatch or [] ,
-        risk.narrowMatch or [],
-        risk.relatedMatch or []]
+        options = [
+            risk.closeMatch or [],
+            risk.exactMatch or [],
+            risk.broadMatch or [],
+            risk.narrowMatch or [],
+            risk.relatedMatch or [],
+        ]
         related_risk_ids = [x for x_list in options for x in x_list]
         related_risk_instances = [cls.get_risk(id=x) for x in related_risk_ids]
         return related_risk_instances
@@ -421,7 +425,6 @@ class AIAtlasNexus:
             "Please provide risk, tag, id, or name",
         )
 
-
         if id:
             risk = cls.get_risk(id=id)
         elif tag:
@@ -431,11 +434,13 @@ class AIAtlasNexus:
 
         related_action_ids = risk.hasRelatedAction
         if related_action_ids:
-            return [cls._atlas_explorer.get_by_id("actions", identifier=x) for x in related_action_ids]
+            return [
+                cls._atlas_explorer.get_by_id("actions", identifier=x)
+                for x in related_action_ids
+            ]
         else:
             return []
         return related_action_instances
-
 
     def get_all_actions(cls, taxonomy=None):
         """Get all action definitions from the LinkML
@@ -455,7 +460,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        action_instances: list[Action] = cls._atlas_explorer.get_all("actions", taxonomy=taxonomy)
+        action_instances: list[Action] = cls._atlas_explorer.get_all(
+            "actions", taxonomy=taxonomy
+        )
         return action_instances
 
     def get_action_by_id(cls, id, taxonomy=None):
@@ -541,9 +548,11 @@ class AIAtlasNexus:
         elif name:
             risk = cls.get_risk(name=name)
 
-        risk_controls = [cls._atlas_explorer.get_by_id("riskcontrols", identifier=x) for x in risk.isDetectedBy or []]
+        risk_controls = [
+            cls._atlas_explorer.get_by_id("riskcontrols", identifier=x)
+            for x in risk.isDetectedBy or []
+        ]
         return risk_controls
-
 
     def get_all_risk_controls(cls, taxonomy=None):
         """Get all risk control definitions from the LinkML
@@ -563,8 +572,8 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        risk_control_instances: list[RiskControl] = (
-            cls._atlas_explorer.get_all("riskcontrols", taxonomy=taxonomy)
+        risk_control_instances: list[RiskControl] = cls._atlas_explorer.get_all(
+            "riskcontrols", taxonomy=taxonomy
         )
         return risk_control_instances
 
@@ -594,7 +603,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        risk_control: RiskControl | None = cls._atlas_explorer.get_by_id("riskcontrols", identifier=id)
+        risk_control: RiskControl | None = cls._atlas_explorer.get_by_id(
+            "riskcontrols", identifier=id
+        )
         return risk_control
 
     def identify_risks_from_usecases(
@@ -684,7 +695,9 @@ class AIAtlasNexus:
         if set_taxonomy == "ibm-attack-risk-atlas":
             risks = [
                 risk
-                for risk in cls._atlas_explorer.get_all("risks", taxonomy="ibm-risk-atlas")
+                for risk in cls._atlas_explorer.get_all(
+                    "risks", taxonomy="ibm-risk-atlas"
+                )
                 if risk.tag.endswith("-attack")
             ]
         else:
@@ -693,11 +706,10 @@ class AIAtlasNexus:
         risk_detector = GenericRiskDetector(
             risks=risks,
             inference_engine=inference_engine,
-            cot_examples=processed_examples,
             max_risk=max_risk,
         )
 
-        return risk_detector.detect(usecases)
+        return risk_detector.detect_one(usecases)
 
     def get_all_taxonomies(cls):
         """Get all taxonomy definitions from the LinkML
@@ -706,7 +718,9 @@ class AIAtlasNexus:
             List[RiskTaxonomy]
                 Result containing a list of AI Risk taxonomies
         """
-        taxonomy_instances: list[RiskTaxonomy] = cls._atlas_explorer.get_all("taxonomies")
+        taxonomy_instances: list[RiskTaxonomy] = cls._atlas_explorer.get_all(
+            "taxonomies"
+        )
         return taxonomy_instances
 
     def get_taxonomy_by_id(cls, id):
@@ -727,7 +741,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        taxonomy: RiskTaxonomy | None = cls._atlas_explorer.get_by_id("taxonomies", identifier=id)
+        taxonomy: RiskTaxonomy | None = cls._atlas_explorer.get_by_id(
+            "taxonomies", identifier=id
+        )
         return taxonomy
 
     def generate_zero_shot_risk_questionnaire_output(
@@ -999,8 +1015,8 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        risk_incident_instances: List[RiskIncident] = (
-            cls._atlas_explorer.get_all("riskincidents", taxonomy=taxonomy)
+        risk_incident_instances: List[RiskIncident] = cls._atlas_explorer.get_all(
+            "riskincidents", taxonomy=taxonomy
         )
         return risk_incident_instances
 
@@ -1030,7 +1046,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        risk_incident: RiskIncident | None = cls._atlas_explorer.get_by_id("riskincidents", identifier=id)
+        risk_incident: RiskIncident | None = cls._atlas_explorer.get_by_id(
+            "riskincidents", identifier=id
+        )
         return risk_incident
 
     def get_related_risk_incidents(
@@ -1074,8 +1092,10 @@ class AIAtlasNexus:
         if risk_id:
             risk = cls.get_risk(id=risk_id)
 
-
-        related_risk_incidents = cls._atlas_explorer.query("riskincidents", refersToRisk=risk.id, taxonomy=taxonomy,
+        related_risk_incidents = cls._atlas_explorer.query(
+            "riskincidents",
+            refersToRisk=risk.id,
+            taxonomy=taxonomy,
         )
         return related_risk_incidents
 
@@ -1092,7 +1112,9 @@ class AIAtlasNexus:
         """
         type_check("<RAN18094995E>", str, allow_none=True, taxonomy=taxonomy)
 
-        evaluation_instances: list[AiEval] = cls._atlas_explorer.get_all("evaluations", taxonomy=taxonomy)
+        evaluation_instances: list[AiEval] = cls._atlas_explorer.get_all(
+            "evaluations", taxonomy=taxonomy
+        )
         return evaluation_instances
 
     def get_evaluation(cls, id=None, taxonomy=None):
@@ -1111,7 +1133,9 @@ class AIAtlasNexus:
         type_check("<RAN84465757E>", str, allow_none=False, id=id)
         type_check("<RAN29906222E>", str, allow_none=True, taxonomy=taxonomy)
 
-        evaluation: AiEval | None = cls._atlas_explorer.get_by_id("evaluations", identifier=id)
+        evaluation: AiEval | None = cls._atlas_explorer.get_by_id(
+            "evaluations", identifier=id
+        )
         return evaluation
 
     def get_related_evaluations(cls, risk=None, risk_id=None, taxonomy=None):
@@ -1145,7 +1169,9 @@ class AIAtlasNexus:
         if risk_id:
             risk = cls.get_risk(id=risk_id)
 
-        related_evaluations = cls._atlas_explorer.query("evaluations", hasRelatedRisk=risk.id, taxonomy=taxonomy)
+        related_evaluations = cls._atlas_explorer.query(
+            "evaluations", hasRelatedRisk=risk.id, taxonomy=taxonomy
+        )
         return related_evaluations
 
     def get_benchmark_metadata_cards(cls, risk=None, risk_id=None, taxonomy=None):
@@ -1216,7 +1242,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        document_instances: list[Documentation] = cls._atlas_explorer.get_all("documents", taxonomy=taxonomy)
+        document_instances: list[Documentation] = cls._atlas_explorer.get_all(
+            "documents", taxonomy=taxonomy
+        )
         return document_instances
 
     def get_document(cls, id=str):
@@ -1239,7 +1267,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        document: Documentation | None = cls._atlas_explorer.get_by_id("documents", identifier=id)
+        document: Documentation | None = cls._atlas_explorer.get_by_id(
+            "documents", identifier=id
+        )
         return document
 
     def get_datasets(cls, taxonomy=None):
@@ -1260,7 +1290,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        dataset_instances: list[Dataset] = cls._atlas_explorer.get_all("datasets", taxonomy=taxonomy)
+        dataset_instances: list[Dataset] = cls._atlas_explorer.get_all(
+            "datasets", taxonomy=taxonomy
+        )
         return dataset_instances
 
     def get_dataset(cls, id=str):
@@ -1283,7 +1315,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        dataset: Dataset | None = cls._atlas_explorer.get_by_id("datasets", identifier=id)
+        dataset: Dataset | None = cls._atlas_explorer.get_by_id(
+            "datasets", identifier=id
+        )
         return dataset
 
     def get_stakeholders(cls, taxonomy=None):
@@ -1304,7 +1338,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        stakeholder_instances: list[Stakeholder] = cls._atlas_explorer.get_all("stakeholders", taxonomy=taxonomy)
+        stakeholder_instances: list[Stakeholder] = cls._atlas_explorer.get_all(
+            "stakeholders", taxonomy=taxonomy
+        )
         return stakeholder_instances
 
     def get_stakeholder(cls, id=str):
@@ -1327,7 +1363,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        stakeholder: Stakeholder | None = cls._atlas_explorer.get_by_id("stakeholders", identifier=id)
+        stakeholder: Stakeholder | None = cls._atlas_explorer.get_by_id(
+            "stakeholders", identifier=id
+        )
         return stakeholder
 
     def get_intrinsics(cls, taxonomy=None):
@@ -1348,7 +1386,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        intrinsic_instances: list[LLMIntrinsic] = cls._atlas_explorer.get_all("llmintrinsics", taxonomy=taxonomy)
+        intrinsic_instances: list[LLMIntrinsic] = cls._atlas_explorer.get_all(
+            "llmintrinsics", taxonomy=taxonomy
+        )
         return intrinsic_instances
 
     def get_intrinsic(cls, id=str):
@@ -1371,7 +1411,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        intrinsic: LLMIntrinsic | None = cls._atlas_explorer.get_by_id("llmintrinsics", identifier=id)
+        intrinsic: LLMIntrinsic | None = cls._atlas_explorer.get_by_id(
+            "llmintrinsics", identifier=id
+        )
         return intrinsic
 
     def get_related_intrinsics(
@@ -1428,7 +1470,9 @@ class AIAtlasNexus:
         elif name:
             risk = cls.get_risk(name=name)
 
-        related_llmintrinsics = cls._atlas_explorer.query("llmintrinsics", hasRelatedRisk=risk.id, taxonomy=taxonomy)
+        related_llmintrinsics = cls._atlas_explorer.query(
+            "llmintrinsics", hasRelatedRisk=risk.id, taxonomy=taxonomy
+        )
         return related_llmintrinsics
 
     def get_adapters(cls, taxonomy=None):
@@ -1449,7 +1493,9 @@ class AIAtlasNexus:
             taxonomy=taxonomy,
         )
 
-        adapter_instances: list[Adapter] = cls._atlas_explorer.get_all("adapters", taxonomy)
+        adapter_instances: list[Adapter] = cls._atlas_explorer.get_all(
+            "adapters", taxonomy
+        )
         return adapter_instances
 
     def get_adapter(cls, id=str):
@@ -1472,7 +1518,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        adapter: Adapter | None = cls._atlas_explorer.get_by_id("adapters", identifier=id)
+        adapter: Adapter | None = cls._atlas_explorer.get_by_id(
+            "adapters", identifier=id
+        )
         return adapter
 
     def get_llm_question_policies(cls, taxonomy=None):
@@ -1518,8 +1566,8 @@ class AIAtlasNexus:
             id=id,
         )
 
-        llm_question_policy: LLMQuestionPolicy | None = (
-            cls._atlas_explorer.get_by_id("llmquestionPolicies", identifier=id)
+        llm_question_policy: LLMQuestionPolicy | None = cls._atlas_explorer.get_by_id(
+            "llmquestionPolicies", identifier=id
         )
         return llm_question_policy
 
@@ -1550,7 +1598,9 @@ class AIAtlasNexus:
             document=document,
         )
 
-        principle_instances: list[Principle] = cls._atlas_explorer.get_all("principles", taxonomy=taxonomy, document=document)
+        principle_instances: list[Principle] = cls._atlas_explorer.get_all(
+            "principles", taxonomy=taxonomy, document=document
+        )
         return principle_instances
 
     def get_principle(cls, id=str):
@@ -1571,7 +1621,9 @@ class AIAtlasNexus:
             id=id,
         )
 
-        principle: Principle | None = cls._atlas_explorer.get_by_id("principles", identifier=id)
+        principle: Principle | None = cls._atlas_explorer.get_by_id(
+            "principles", identifier=id
+        )
         return principle
 
     def get_instances(cls, target_class, taxonomy=None):

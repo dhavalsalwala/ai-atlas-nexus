@@ -13,7 +13,7 @@ QUESTIONNAIRE_COT_TEMPLATE = """
         Question: {{ question }}
 """
 
-RISK_IDENTIFICATION_TEMPLATE = """You are an expert at AI risk classification. Study the risks JSON below containing list of risk category and its description.
+RISK_IDENTIFICATION_BATCH_TEMPLATE = """You are an expert at AI risk classification. Study the risks JSON below containing list of risk category and its description.
 
 RISKS:
 {{ risks }}
@@ -30,6 +30,19 @@ Risks: {{ example.Risks }}{% endfor %}
 {% endif %}
 Usecase: {{ usecase }}
 Risks: """
+
+RISK_IDENTIFICATION_TEMPLATE = """You are an expert at determining whether AI risk exists in the given use case. Understand the given AI Risk from its description.
+
+AI Risk: {{ risk_name }}
+Description: {{ risk_description }}
+
+Instructions:
+1. Use AI Risk `Description` to determine if the given AI Risk is associated with the Usecase.
+2. If the given AI Risk exist in the usecase, classify it as Yes.
+3. If the Usecase doesn't fit into the AI Risk description, classify it as No.
+
+Usecase: {{ usecase }}
+Risk: """
 
 AI_TASKS_TEMPLATE = """Study and understand the JSON below containing a list of LLM task and its description.
 

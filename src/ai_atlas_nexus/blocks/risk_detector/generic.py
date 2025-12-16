@@ -1,10 +1,14 @@
 import json
+import math
 from typing import List
 
 from ai_atlas_nexus.ai_risk_ontology.datamodel.ai_risk_ontology import Risk
 from ai_atlas_nexus.blocks.inference import TextGenerationInferenceOutput
 from ai_atlas_nexus.blocks.prompt_response_schema import LIST_OF_STR_SCHEMA
-from ai_atlas_nexus.blocks.prompt_templates import RISK_IDENTIFICATION_TEMPLATE
+from ai_atlas_nexus.blocks.prompt_templates import (
+    RISK_IDENTIFICATION_BATCH_TEMPLATE,
+    RISK_IDENTIFICATION_TEMPLATE,
+)
 from ai_atlas_nexus.blocks.risk_detector import RiskDetector
 
 
@@ -12,7 +16,9 @@ class GenericRiskDetector(RiskDetector):
 
     def detect(self, usecases: List[str]) -> List[List[Risk]]:
         prompts = [
-            self.prompt_builder(prompt_template=RISK_IDENTIFICATION_TEMPLATE).build(
+            self.prompt_builder(
+                prompt_template=RISK_IDENTIFICATION_BATCH_TEMPLATE
+            ).build(
                 cot_examples=self._examples,
                 usecase=usecase,
                 risks=json.dumps(
@@ -53,3 +59,47 @@ class GenericRiskDetector(RiskDetector):
             )
             for inference_response in inference_responses
         ]
+
+    def detect_one(self, usecases: List[str]) -> List[List[Risk]]:
+        all_risks = []
+        for usecase in usecases:
+            prompts = [
+                self.prompt_builder(prompt_template=RISK_IDENTIFICATION_TEMPLATE).build(
+                    usecase=usecase,
+                    risk_name=risk.name,
+                    risk_description=risk.description,
+                )
+                for risk in self._risks
+            ]
+
+            # Populate schema items
+            json_schema = dict(LIST_OF_STR_SCHEMA)
+            json_schema["items"]["enum"] = ["Yes", "No"]
+
+            # Invoke inference service
+            inference_responses: List[TextGenerationInferenceOutput] = (
+                self.inference_engine.generate(
+                    prompts,
+                    response_format={
+                        "type": "object",
+                        "properties": {
+                            "answer": {
+                                "type": "string",
+                                "enum": ["Yes", "No"],
+                            }
+                        },
+                        "required": [
+                            "answer",
+                        ],
+                    },
+                    postprocessors=["json_object"],
+                )
+            )
+
+            risks = []
+            for index, response in enumerate(inference_responses):
+                if response.prediction["answer"] == "Yes":
+                    risks.append(self._risks[index])
+            all_risks.append(risks)
+
+        return all_risks
