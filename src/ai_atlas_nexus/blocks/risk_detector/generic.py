@@ -95,15 +95,12 @@ class GenericRiskDetector(RiskDetector):
                 )
             )
 
-            risks = []
-            for index, response in enumerate(inference_responses):
-                if response.prediction["answer"] == "Yes":
-                    risks.append(
-                        {
-                            "risk": self._risks[index].name,
-                            "explanation": response.prediction["explanation"],
-                        }
-                    )
-            all_risks.append(risks)
+            all_risks.append(
+                [
+                    self._risks[index]
+                    for index, response in enumerate(inference_responses)
+                    if response.prediction["answer"] == "Yes"
+                ]
+            )
 
         return all_risks
