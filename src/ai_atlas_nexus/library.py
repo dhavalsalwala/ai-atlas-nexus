@@ -616,6 +616,7 @@ class AIAtlasNexus:
         cot_examples: Optional[Dict[str, List]] = None,
         max_risk: Optional[int] = None,
         zero_shot_only: bool = False,
+        batch_inference: Optional[bool] = True,
     ) -> List[List[Risk]]:
         """Identify potential risks from a usecase description
 
@@ -709,7 +710,11 @@ class AIAtlasNexus:
             max_risk=max_risk,
         )
 
-        return risk_detector.detect_one(usecases)
+        return (
+            risk_detector.detect(usecases)
+            if batch_inference
+            else risk_detector.detect_one(usecases)
+        )
 
     def get_all_taxonomies(cls):
         """Get all taxonomy definitions from the LinkML
