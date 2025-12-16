@@ -608,7 +608,7 @@ class AIAtlasNexus:
         )
         return risk_control
 
-    def docs/examples/notebooks/risk_identification.ipynbidentify_risks_from_usecases(
+    def identify_risks_from_usecases(
         cls,
         usecases: List[str],
         inference_engine: InferenceEngine,
