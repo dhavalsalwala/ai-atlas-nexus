@@ -634,7 +634,7 @@ class AIAtlasNexus:
             max_risk (int, optional):
                 The maximum number of risks to extract. Pass None to allow the inference engine to determine the number of risks. Defaults to None.
             zero_shot_only (bool): If enabled, this flag allows the system to perform Zero Shot Risk identification, and the field `cot_examples` will be ignored.
-            batch_inference (bool): Whether to risk inference service in batch mode or at each risk level. Defaults to True.
+            batch_inference (bool): Whether to run risk inference service in batch mode or at each risk level. Defaults to True.
         Returns:
             List[List[Risk]]:
                 Result containing a list of risks
